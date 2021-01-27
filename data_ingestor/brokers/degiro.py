@@ -1,10 +1,10 @@
 import degiroapi
 from degiroapi.product import Product
 
-from Brokers import BrokerInterface
+import broker_interface
 
 
-class DegiroAPI(BrokerInterface.BrokerInterface):
+class DegiroAPI(broker_interface.BrokerInterface):
     degiroClient = degiroapi.DeGiro()
 
     def login(self, user, password):
