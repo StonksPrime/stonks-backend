@@ -13,7 +13,7 @@ class BrokerInterface(abc.ABC):
     #logout
 
     @abc.abstractmethod
-    def getCurrentPositions(self):
+    def updateCurrentPositions(self):
         pass
     #getCurrentPositions
 

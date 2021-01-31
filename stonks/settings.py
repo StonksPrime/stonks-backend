@@ -28,11 +28,10 @@ DEBUG = True
 
 ALLOWED_HOSTS = settings_secret.ALLOWED_HOSTS
 
-AUTH_USER_MODEL = 'data_ingestor.User'
-
 # Application definition
 
 INSTALLED_APPS = [
+    
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -40,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_countries',
-    'data_ingestor'
+    'core_data',
 ]
 
 MIDDLEWARE = [
@@ -79,6 +78,7 @@ WSGI_APPLICATION = 'stonks.wsgi.application'
 
 DATABASES = settings_secret.DATABASES
 
+AUTH_USER_MODEL = "core_data.Investor"
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
