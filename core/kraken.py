@@ -9,7 +9,7 @@ import hmac
 import urllib.request
 import json
 
-from .models import Investor, Broker, Position, Account, Asset, Crypto
+from .models import Investor, Broker, Position, Account, Asset, Crypto, Fiat
 
 class KrakenAPI(broker_interface.BrokerInterface):
     """ Loads a session for a given user with the broker
@@ -31,10 +31,9 @@ class KrakenAPI(broker_interface.BrokerInterface):
         self.api_domain = "https://api.kraken.com"
         self.api_data = ""
 
-        #self.
         return
 
-    def login(self, user, password):
+    def loadInvestorAccount(self, investor_username):
         """ Load user session with broker
         :param user: user or key 
         :type user: str
@@ -42,35 +41,39 @@ class KrakenAPI(broker_interface.BrokerInterface):
         :type secret: str
         :returns: None
         """
+        self.investor = Investor.objects.filter(username=investor_username)[0]
+        print(self.investor)
+
+        self.account = Account.objects.filter(person=self.investor, broker_exchange__name='Kraken')[0]
+        print (self.account)
+
         return
-
-
-
-    def logout(self):
-        """ Close this session.
-        :returns: None
-        """
-        return
-
 
     def updateCurrentPositions(self):
 
-        inv = Investor.objects.filter(username='admin')[0]
-        print(inv)
-
-        account = Account.objects.filter(person=inv, broker_exchange__name='Kraken')[0]
-        print (account)
-
         json_assets = self._query('Assets')
-        
         assets = json.loads(json_assets)
         #for asset in assets["result"]:
         #    print ("Asset: " + asset + str(assets["result"][asset]))
 
-        json_balance = self._query('Balance',account.token_key, account.token_secret)
+        json_balance = self._query('Balance')
         balance = json.loads(json_balance)
         for currency in balance["result"]:
             print ("Currency: " + currency + str(balance["result"][currency]))
+            currencyAltName = assets["result"][currency]['altname']
+            asset_name = currencyAltName
+            prefix = currency.replace(currencyAltName,'')
+
+            if (prefix=='Z'):                    # Asset type = fiat money
+                asset = Fiat.objects.get_or_create(ticker=asset_name)
+
+            if (prefix=='X' or prefix==''):     # Asset type = cryptocurrency
+                if (asset_name == 'XBT'):           # Fix Kraken weird ticker
+                    asset_name.replace('XBT','BTC')
+
+                asset = Crypto.objects.get_or_create(ticker=asset_name)
+
+            #Position.objects.get_or_create(asset=asset,user=self.investor,broker__name='Kraken') 
         
 
     def getAssetByISIN(self, isin):
@@ -78,7 +81,7 @@ class KrakenAPI(broker_interface.BrokerInterface):
 
 
 
-    def _query(self, api_method, key='', secret=''):
+    def _query(self, api_method):
         """ Low-level query handling.
  
         :param data: API request parameters
@@ -96,8 +99,8 @@ class KrakenAPI(broker_interface.BrokerInterface):
             self.api_path = "/0/private/"
             api_nonce = str(int(time.time()*1000))
 
-            api_key = key
-            api_secret = base64.b64decode(secret)
+            api_key = self.account.token_key 
+            api_secret = base64.b64decode(self.account.token_secret)
 
             api_postdata = self.api_data + "&nonce=" + api_nonce
             api_postdata = api_postdata.encode('utf-8')
@@ -128,7 +131,6 @@ class KrakenAPI(broker_interface.BrokerInterface):
             return api_reply
         else:
             print(api_reply)
-            print('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
             return api_reply
 
         return api_reply

@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_countries',
-    'core_data',
+    'core',
 ]
 
 MIDDLEWARE = [
@@ -78,7 +78,7 @@ WSGI_APPLICATION = 'stonks.wsgi.application'
 
 DATABASES = settings_secret.DATABASES
 
-AUTH_USER_MODEL = "core_data.Investor"
+AUTH_USER_MODEL = "core.Investor"
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators

@@ -3,14 +3,9 @@ import abc
 
 class BrokerInterface(abc.ABC):
     @abc.abstractmethod
-    def login(self, user, password):
+    def loadInvestorAccount(self, investor):
         pass
     #login
-
-    @abc.abstractmethod
-    def logout(self):
-        pass
-    #logout
 
     @abc.abstractmethod
     def updateCurrentPositions(self):
