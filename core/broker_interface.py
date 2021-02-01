@@ -13,6 +13,6 @@ class BrokerInterface(abc.ABC):
     #getCurrentPositions
 
     @abc.abstractmethod
-    def getAssetByISIN(self, ISIN):
+    def getAssetPrice(self, isin, ticker):
         pass
     #getAsset

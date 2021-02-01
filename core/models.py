@@ -58,6 +58,9 @@ class Asset(models.Model):
     class Meta:
         db_table = 'core_financial_asset'
 
+    def __str__(self):
+        return "%s asset" % (self.ticker)
+
 class Stock(Asset):
     isin = models.CharField(max_length=60)
     country = CountryField()
@@ -118,19 +121,19 @@ class Position(models.Model):
     quantity = models.DecimalField(default=0, max_digits=18, decimal_places=8)
     break_even_price = models.DecimalField(default=0, max_digits=18, decimal_places=8)
     closing_price = models.DecimalField(default=0, max_digits=18, decimal_places=8)
-    opening_date = models.DateTimeField(editable=True, default=None)
-    closing_date = models.DateTimeField(editable=True, default=None)
+    opening_date = models.DateTimeField(null=True, editable=True, default=None)
+    closing_date = models.DateTimeField(null=True, editable=True, default=None)
     order_status = models.CharField(max_length=1, choices=STATUS)
 
     user = models.ForeignKey(Investor, on_delete=models.DO_NOTHING, null=True, related_name="position_investor")
-    asset = models.OneToOneField(Asset, on_delete=models.DO_NOTHING, null=True, related_name="position_asset")
-    broker = models.OneToOneField(Broker, on_delete=models.DO_NOTHING, null=True, related_name="position_broker")
+    asset = models.ForeignKey(Asset, on_delete=models.DO_NOTHING, null=True, related_name="position_asset")
+    broker = models.ForeignKey(Broker, on_delete=models.DO_NOTHING, null=True, related_name="position_broker")
 
     class Meta:
         db_table = 'core_investor_asset_position'
 
     def __str__(self):
-        return "%s Position, quantity: %d , BEP: %d" % (self.order_status, self.break_even_price)
+        return "%s %s's %s Position, quantity: %f at %s" % (self.user.first_name, self.user.last_name, self.asset.ticker ,self.quantity, self.broker.name)
 
 #I think this will be on code
 #class BrokerInterface(models.Model):

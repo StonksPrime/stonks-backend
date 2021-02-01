@@ -34,5 +34,18 @@ Installation
 
 5. Apply database migration
     ```bash
+    python manage.py makemigrations
     python manage.py migrate
     ```
+
+5. Create Django superuser
+    ```bash
+    python manage.py createsuperuser
+    ```
+
+    Now you can run the app with this command:
+    ```bash
+    python manage.py runserver
+    ```
+    And access Django admin page at [127.0.0.1:8000/admin](127.0.0.1:8000/admin)
+

@@ -12,17 +12,11 @@ import json
 from .models import Investor, Broker, Position, Account, Asset, Crypto, Fiat
 
 class KrakenAPI(broker_interface.BrokerInterface):
-    """ Loads a session for a given user with the broker
-    """
+    """ Loads a session for a given user with the broker"""
 
-    def __init__(self, user='', password=''):
-        """ Create an object with authentication information.
-        :param user: (optional)
-        :type password: str
-        :param password: (optional) 
-        :type password: str
-        :returns: None
-        """
+    def __init__(self):
+        """ Create an object with API information."""
+
         self.api_public = {"Time", "Assets", "AssetPairs", "Ticker", "OHLC", "Depth", "Trades", "Spread"}
         self.api_private = {"Balance", "BalanceEx", "TradeBalance", "OpenOrders", "ClosedOrders", "QueryOrders", "TradesHistory", "QueryTrades", "OpenPositions", "Ledgers", "QueryLedgers", "TradeVolume", "AddExport", "ExportStatus", "RetrieveExport", "RemoveExport", "GetWebSocketsToken"}
         self.api_trading = {"AddOrder", "CancelOrder", "CancelAll"}
@@ -31,14 +25,14 @@ class KrakenAPI(broker_interface.BrokerInterface):
         self.api_domain = "https://api.kraken.com"
         self.api_data = ""
 
+        self.broker, created = Broker.objects.get_or_create(name='Kraken',country='US',fiscal_country='GB')
         return
 
     def loadInvestorAccount(self, investor_username):
         """ Load user session with broker
-        :param user: user or key 
-        :type user: str
-        :param password: (optional) actual private key used to sign messages
-        :type secret: str
+
+        :param investor_username: user 
+        :type investor_username: Investor
         :returns: None
         """
         self.investor = Investor.objects.filter(username=investor_username)[0]
@@ -50,6 +44,7 @@ class KrakenAPI(broker_interface.BrokerInterface):
         return
 
     def updateCurrentPositions(self):
+        """ Updates current user positions and assets with this broker """
 
         json_assets = self._query('Assets')
         assets = json.loads(json_assets)
@@ -59,41 +54,37 @@ class KrakenAPI(broker_interface.BrokerInterface):
         json_balance = self._query('Balance')
         balance = json.loads(json_balance)
         for currency in balance["result"]:
-            print ("Currency: " + currency + str(balance["result"][currency]))
-            currencyAltName = assets["result"][currency]['altname']
-            asset_name = currencyAltName
-            prefix = currency.replace(currencyAltName,'')
+            amount=balance["result"][currency]
+            print ("Currency: " + currency + str(amount))
+            asset_name = assets["result"][currency]['altname']
+            prefix = currency.replace(asset_name,'')
 
             if (prefix=='Z'):                    # Asset type = fiat money
-                asset = Fiat.objects.get_or_create(ticker=asset_name)
-
+                asset, created = Fiat.objects.get_or_create(ticker=asset_name)
+             
             if (prefix=='X' or prefix==''):     # Asset type = cryptocurrency
                 if (asset_name == 'XBT'):           # Fix Kraken weird ticker
-                    asset_name.replace('XBT','BTC')
+                    asset_name = asset_name.replace('XBT','BTC')
 
-                asset = Crypto.objects.get_or_create(ticker=asset_name)
-
-            #Position.objects.get_or_create(asset=asset,user=self.investor,broker__name='Kraken') 
+                asset, created = Crypto.objects.get_or_create(ticker=asset_name)
+            
+            Position.objects.update_or_create(asset=asset, user=self.investor, broker=self.broker
+                                            , defaults = { 'quantity': amount, 'order_status':'C'})
+             
         
 
-    def getAssetByISIN(self, isin):
+    def getAssetPrice(self, isin, ticker):
         return 1
 
 
 
     def _query(self, api_method):
         """ Low-level query handling.
- 
-        :param data: API request parameters
-        :type data: dict
-        :param headers: (optional) HTTPS headers
-        :type headers: dict
-        :param timeout: (optional) if not ``None``, a :py:exc:`requests.HTTPError`
-                        will be thrown after ``timeout`` seconds if a response
-                        has not been received
-        :type timeout: int or float
-        :returns: :py:meth:`requests.Response.json`-deserialised Python object
-        :raises: :py:exc:`requests.HTTPError`: if response status not successful
+
+        :param api_method: API request method whether public or private
+        :type api_method: str
+        :returns: `requests.Response.json`-deserialised Python object
+        :raises: `requests.HTTPError`: if response status not successful
         """
         if api_method in self.api_private or api_method in self.api_trading or api_method in self.api_funding:
             self.api_path = "/0/private/"
