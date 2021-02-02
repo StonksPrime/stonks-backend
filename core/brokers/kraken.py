@@ -9,7 +9,7 @@ import hmac
 import urllib.request
 import json
 
-from .models import Investor, Broker, Position, Account, Asset, Crypto, Fiat
+from core.models import Investor, Broker, Position, Account, Asset, Crypto, Fiat
 
 class KrakenAPI(broker_interface.BrokerInterface):
     """ Loads a session for a given user with the broker"""
