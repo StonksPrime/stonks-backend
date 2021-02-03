@@ -1,18 +1,32 @@
 import abc
+from enum import Enum
+from broker_object import BrokerObject
 
 
 class BrokerInterface(abc.ABC):
     @abc.abstractmethod
-    def loadInvestorAccount(self, investor):
+    def __init__(self):
         pass
-    #login
+    #init
 
     @abc.abstractmethod
-    def updateCurrentPositions(self):
+    def getBroker(self) -> BrokerObject:
         pass
-    #getCurrentPositions
+    #getBroker
 
     @abc.abstractmethod
-    def getAssetPrice(self, isin, ticker):
+    def loadInvestorAccount(self, username, password, token):
         pass
-    #getAsset
+    #loadInvestorAccount
+
+    @abc.abstractmethod
+    def geturrentPositions(self) -> list():
+        pass
+    #geturrentPositions
+
+    class BrokerTypes(Enum):
+        DEGIRO = "Degiro"
+        TRADING212 = "T212"
+        KRAKEN = "Kraken"
+    #BrokerTypes
+#BrokerInterface
