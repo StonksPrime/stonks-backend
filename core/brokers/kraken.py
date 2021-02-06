@@ -62,17 +62,14 @@ class KrakenAPI(broker_interface.BrokerInterface):
             if (prefix=='Z'):                    # Asset type = fiat money
                 asset, created = Fiat.objects.get_or_create(ticker=asset_name)
              
-            if (prefix=='X' or prefix==''):     # Asset type = cryptocurrency
+            elif (prefix=='X' or prefix==''):     # Asset type = cryptocurrency
                 if (asset_name == 'XBT'):           # Fix Kraken weird ticker
                     asset_name = asset_name.replace('XBT','BTC')
 
                 asset, created = Crypto.objects.get_or_create(ticker=asset_name)
             
-            Position.objects.update_or_create(asset=asset, user=self.investor, broker=self.broker
-                                            , defaults = { 'quantity': amount, 'order_status':'C'})
+            Position.objects.update_or_create(asset=asset, user=self.investor, broker=self.broker, defaults = { 'quantity': amount, 'order_status':'C'})
              
-        
-
     def getAssetPrice(self, isin, ticker):
         return 1
 

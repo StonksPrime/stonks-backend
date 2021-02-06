@@ -1,7 +1,5 @@
 import abc
 from enum import Enum
-from broker_object import BrokerObject
-
 
 class BrokerInterface(abc.ABC):
     @abc.abstractmethod
@@ -9,10 +7,6 @@ class BrokerInterface(abc.ABC):
         pass
     #init
 
-    @abc.abstractmethod
-    def getBroker(self) -> BrokerObject:
-        pass
-    #getBroker
 
     @abc.abstractmethod
     def loadInvestorAccount(self, username, password, token):
@@ -20,7 +14,7 @@ class BrokerInterface(abc.ABC):
     #loadInvestorAccount
 
     @abc.abstractmethod
-    def geturrentPositions(self) -> list():
+    def updateCurrentPositions(self):
         pass
     #geturrentPositions
 

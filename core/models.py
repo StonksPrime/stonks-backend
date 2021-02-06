@@ -7,7 +7,7 @@ class Broker(models.Model):
     name = models.CharField(max_length=60)
     country = CountryField()
     fiscal_country = CountryField()
-    
+    #interface = models.CharField(max_length=60)
     class Meta:
         db_table = 'broker' #TODO: add core_ in db_table
     
@@ -27,8 +27,8 @@ class Investor(AbstractUser):
         return "Investor: %s %s" % (self.first_name, self.last_name)
 
 class Account(models.Model):
-    person = models.ForeignKey(Investor, on_delete=models.CASCADE)
-    broker_exchange = models.ForeignKey(Broker, on_delete=models.CASCADE)
+    person = models.ForeignKey(Investor, null=True, on_delete=models.SET_NULL)
+    broker_exchange = models.ForeignKey(Broker, null=True, on_delete=models.SET_NULL)
     broker_username = models.CharField(max_length=60, blank=True)
     broker_password = models.CharField(max_length=60, blank=True)
     token_key = models.CharField(max_length=200, blank=True)
