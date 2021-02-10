@@ -4,14 +4,18 @@ from django.http import JsonResponse,HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 
-from .models import Position, Broker, Account
+from .models import Position, Broker, Account, Investor
 from .brokers import kraken
-from .serializers import UserSerializer, LogInSerializer
+from .serializers import InvestorSerializer, UserSerializer, LogInSerializer
 
 from rest_framework import generics
+from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 
 
+#TODO: delete this?
 class SignUpView(generics.CreateAPIView):
     queryset = get_user_model().objects.all()
     serializer_class = UserSerializer
@@ -19,6 +23,52 @@ class SignUpView(generics.CreateAPIView):
 class LogInView(TokenObtainPairView): 
     serializer_class = LogInSerializer
 
+class InvestorList(APIView):
+    """
+    List all snippets, or create a new snippet.
+    """
+    def get(self, request, format=None):
+        investor = Investor.objects.all()
+        serializer = InvestorSerializer(investor, many=True)
+        return Response(serializer.data)
+
+    def post(self, request, format=None):
+        serializer = InvestorSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class InvestorDetail(APIView):
+    """
+    Retrieve, update or delete a snippet instance.
+    """
+    permission_classes = (IsAuthenticated,)
+    def get_object(self, pk):
+        try:
+            return Investor.objects.get(pk=pk)
+        except Investor.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, format=None):
+        investor = self.get_object(pk)
+        serializer = InvestorSerializer(investor)
+        return Response(serializer.data)
+
+    def put(self, request, pk, format=None):
+        investor = self.get_object(pk)
+        serializer = InvestorSerializer(investor, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk, format=None):
+        investor = self.get_object(pk)
+        investor.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+#TODO: refactor to class based view
 @login_required
 def positions(request):
 
@@ -27,6 +77,7 @@ def positions(request):
 
 	return HttpResponse(data, content_type='application/json')
 
+#TODO: refactor to class based view
 @login_required
 def update_positions(request):
 	accounts = Account.objects.filter(person=request.user)

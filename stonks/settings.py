@@ -29,6 +29,12 @@ DEBUG = True
 
 ALLOWED_HOSTS = settings_secret.ALLOWED_HOSTS
 
+CORS_ALLOW_ALL_ORIGINS = True
+
+#CORS_ORIGIN_WHITELIST = (
+#  'localhost:3000',
+#  '127.0.0.1:3000'
+#)
 # Application definition
 
 INSTALLED_APPS = [
@@ -40,11 +46,14 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_countries',
+    'corsheaders',
     'rest_framework',
     'core',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',

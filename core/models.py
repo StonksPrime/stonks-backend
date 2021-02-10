@@ -19,7 +19,8 @@ class Investor(AbstractUser):
     public_profile = models.BooleanField(default=0)
     birth_date = models.DateField(null=True, blank=True)
     brokers = models.ManyToManyField(Broker, through='Account')
-    
+    #profile_picture = models.CharField(max_length=300, blank=True)
+
     class Meta:
         db_table = 'core_investor'
 
