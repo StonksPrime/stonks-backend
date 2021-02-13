@@ -8,6 +8,7 @@ from ..serializers import FiatSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from rest_framework import status
 
 
 class FiatList(APIView):
@@ -20,6 +21,13 @@ class FiatList(APIView):
         fiat = Fiat.objects.all()
         serializer = FiatSerializer(fiat, many=True)
         return Response(serializer.data)
+
+    def post(self, request, format=None):
+        serializer = FiatSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class FiatDetail(APIView):
     """

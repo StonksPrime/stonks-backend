@@ -5,6 +5,9 @@ from .views.accountviews import AccountDetail, AccountList
 from .views.stockviews import StockDetail, StockList
 from .views.fiatviews import FiatDetail, FiatList
 from .views.positionviews import PositionDetail, PositionList
+from .views.fundviews import FundDetail, FundList
+from .views.etfviews import ETFDetail, ETFList
+from .views.cryptoviews import CryptoDetail, CryptoList
 from .views.views import *
 from rest_framework_simplejwt.views import TokenRefreshView
 
@@ -27,6 +30,15 @@ urlpatterns = [
 
     path('fiats/', FiatList.as_view()),
     path('fiats/<id>/', FiatDetail.as_view()),
+
+    path('funds/', FundList.as_view()),
+    path('funds/<id>/', FundDetail.as_view()),
+
+    path('etfs/', ETFList.as_view()),
+    path('etfs/<id>/', ETFDetail.as_view()),
+
+    path('cryptos/', CryptoList.as_view()),
+    path('cryptos/<id>/', CryptoDetail.as_view()),
 
     path('positions_class/', PositionList.as_view()),
     path('positions_class/<id>/', PositionDetail.as_view()),

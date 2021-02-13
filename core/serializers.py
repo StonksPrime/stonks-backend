@@ -8,6 +8,20 @@ class PositionSerializer(serializers.ModelSerializer):
         model = Position
         fields = ['id','quantity', 'break_even_price', 'closing_price', 'opening_date', 'closing_date', 'order_status', 'user', 'asset', 'broker']
 
+class CryptoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Crypto
+        fields = ['id','name', 'ticker', 'sector', 'description', 'last_price']
+
+class ETFSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ETF
+        fields = ['id','name', 'ticker', 'sector', 'description', 'last_price', 'isin', 'country', 'region']
+
+class FundSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Fund
+        fields = ['id','name', 'ticker', 'sector', 'description', 'last_price', 'isin', 'country', 'region']
 
 class FiatSerializer(serializers.ModelSerializer):
     class Meta:

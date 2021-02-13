@@ -2,8 +2,8 @@ from django.shortcuts import render
 from django.core import serializers
 from django.http import JsonResponse,HttpResponse, Http404
 
-from ..models import Asset
-from ..serializers import AssetSerializer
+from ..models import ETF
+from ..serializers import ETFSerializer
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -11,50 +11,51 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 
 
-class AssetList(APIView):
+
+class ETFList(APIView):
     """
-    List all assets
+    List all etfs
     """
     permission_classes = (IsAuthenticated,)
 
     def get(self, request, format=None):
-        asset = Asset.objects.all()
-        serializer = AssetSerializer(asset, many=True)
+        etf = ETF.objects.all()
+        serializer = ETFSerializer(etf, many=True)
         return Response(serializer.data)
 
     def post(self, request, format=None):
-        serializer = AssetSerializer(data=request.data)
+        serializer = ETFSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class AssetDetail(APIView):
+class ETFDetail(APIView):
     """
-    Retrieve, update or delete an asset instance.
+    Retrieve, update or delete a etf instance.
     """
     permission_classes = (IsAuthenticated,)
 
-    def get_object(self, ticker):
+    def get_object(self, id):
         try:
-            return Asset.objects.get(ticker=ticker)
-        except Asset.DoesNotExist:
+            return ETF.objects.get(id=id)
+        except ETF.DoesNotExist:
             raise Http404
 
-    def get(self, request, ticker, format=None):
-        asset = self.get_object(ticker)
-        serializer = AssetSerializer(asset)
+    def get(self, request, id, format=None):
+        etf = self.get_object(id)
+        serializer = ETFSerializer(etf)
         return Response(serializer.data)
 
-    def put(self, request, ticker, format=None):
-        asset = self.get_object(ticker)
-        serializer = AssetSerializer(asset, data=request.data)
+    def put(self, request, id, format=None):
+        etf = self.get_object(id)
+        serializer = ETFSerializer(etf, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self, request, ticker, format=None):
-        asset = self.get_object(ticker)
-        asset.delete()
+    def delete(self, request, id, format=None):
+        etf = self.get_object(id)
+        etf.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
