@@ -15,7 +15,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 
 
-#TODO: delete this?
+#TODO: merge UserSerializer with InvestorSerializer?
 class SignUpView(generics.CreateAPIView):
     queryset = get_user_model().objects.all()
     serializer_class = UserSerializer
@@ -44,27 +44,27 @@ class InvestorDetail(APIView):
     Retrieve, update or delete a snippet instance.
     """
     permission_classes = (IsAuthenticated,)
-    def get_object(self, pk):
+    def get_object(self, username):
         try:
-            return Investor.objects.get(pk=pk)
+            return Investor.objects.get(username=username)
         except Investor.DoesNotExist:
             raise Http404
 
-    def get(self, request, pk, format=None):
-        investor = self.get_object(pk)
+    def get(self, request, username, format=None):
+        investor = self.get_object(username)
         serializer = InvestorSerializer(investor)
         return Response(serializer.data)
 
-    def put(self, request, pk, format=None):
-        investor = self.get_object(pk)
+    def put(self, request, username, format=None):
+        investor = self.get_object(username)
         serializer = InvestorSerializer(investor, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self, request, pk, format=None):
-        investor = self.get_object(pk)
+    def delete(self, request, username, format=None):
+        investor = self.get_object(username)
         investor.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 

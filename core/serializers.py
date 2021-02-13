@@ -33,7 +33,7 @@ class UserSerializer(serializers.ModelSerializer):
         )
         read_only_fields = ('id',)
 
-class LogInSerializer(TokenObtainPairSerializer): # new
+class LogInSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):
         token = super().get_token(user)
@@ -42,3 +42,14 @@ class LogInSerializer(TokenObtainPairSerializer): # new
             if key != 'id':
                 token[key] = value
         return token
+
+    def validate(self, attrs):
+        # The default result (access/refresh tokens)
+        data = super(LogInSerializer, self).validate(attrs)
+        # Custom data to include a part from token
+        data.update({'id': self.user.id})
+        data.update({'username': self.user.username})
+        data.update({'first_name': self.user.first_name})
+        data.update({'last_name': self.user.last_name})
+        data.update({'picture': 'assets/images/eva.png'}) # TODO: fix with current picture
+        return data
