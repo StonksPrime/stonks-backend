@@ -1,12 +1,12 @@
 from django.shortcuts import render
 from django.core import serializers
-from django.http import JsonResponse,HttpResponse
+from django.http import JsonResponse,HttpResponse, Http404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 
-from .models import Position, Broker, Account, Investor
-from .brokers import kraken
-from .serializers import InvestorSerializer, UserSerializer, LogInSerializer
+from ..models import Position, Broker, Account, Investor
+from ..brokers import kraken
+from ..serializers import InvestorSerializer, UserSerializer, LogInSerializer
 
 from rest_framework import generics
 from rest_framework.views import APIView

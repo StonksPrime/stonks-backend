@@ -1,6 +1,40 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
+from .models import *
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+
+class PositionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Position
+        fields = ['id','quantity', 'break_even_price', 'closing_price', 'opening_date', 'closing_date', 'order_status', 'user', 'asset', 'broker']
+
+
+class FiatSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Fiat
+        fields = ['id','name', 'ticker', 'sector', 'description', 'last_price']
+
+
+class StockSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Stock
+        fields = ['id','name', 'ticker', 'sector', 'description', 'last_price', 'isin', 'country', 'region']
+
+
+class AccountSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Account
+        fields = ['id', 'person', 'broker_exchange', 'broker_username', 'broker_password', 'token_key', 'token_secret'] #TODO: passwords and keys should be here?
+
+class BrokerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Broker
+        fields = ['id', 'name', 'country', 'fiscal_country']
+
+class AssetSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Asset
+        fields = ['id','name', 'ticker', 'sector', 'description', 'last_price']
 
 class InvestorSerializer(serializers.ModelSerializer):
     class Meta:
