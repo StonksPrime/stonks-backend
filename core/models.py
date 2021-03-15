@@ -180,7 +180,7 @@ class UserAssetStrategy(models.Model):
         return "Asset: %s from user: %d. In price: %s. Out price: %s" % (self.name, self.user, self.in_price, self.out_price)
 '''
 #========================================= TODO: ALSO DISCUSS THIS IN THE NEXT MEETING (NOTIFICATION AND PATTERN MODELS)==========================
-
+'''
 class NotificationType(models.Model):
     #class to define and add new type of notifications into the system. Only by admins
 
@@ -281,3 +281,4 @@ class PatternConfig(models.Model):
     #TODO: Revisar aquest model
     pattern_type = models.ForeignKey(PatternType, on_delete=models.DO_NOTHING, null=True, related_name="???") #TODO: Add related name
     json_config = models.JSONField() #With this JSON field we can add the requiered number and type of parameters for each patternType
+'''

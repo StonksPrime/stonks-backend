@@ -2,7 +2,7 @@ from django.urls import path
 from .views.assetviews import AssetDetail, AssetList
 from .views.brokerviews import BrokerDetail, BrokerList
 from .views.accountviews import AccountDetail, AccountList
-from .views.stockviews import StockDetail, StockList
+from .views.stockviews import StockDetail, StockList, StockListApple
 from .views.fiatviews import FiatDetail, FiatList
 from .views.positionviews import PositionDetail, PositionList
 from .views.fundviews import FundDetail, FundList
@@ -26,6 +26,7 @@ urlpatterns = [
     path('accounts/<id>/', AccountDetail.as_view()),
 
     path('stocks/', StockList.as_view()),
+    path('stocksapple/', StockListApple.as_view()),
     path('stocks/<id>/', StockDetail.as_view()),
 
     path('fiats/', FiatList.as_view()),

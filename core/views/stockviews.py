@@ -9,7 +9,14 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
+import finnhub
+from ..secret_api_tokens import *
 
+finnhub_client = finnhub.Client(api_key=FINNHUB_API_KEY)
+
+class StockListApple(APIView):
+    def get(self, request, format=None):
+        return Response(finnhub_client.stock_candles('AAPL', 'D', 1590988249, 1591852249), status=status.HTTP_200_OK)
 
 
 class StockList(APIView):
