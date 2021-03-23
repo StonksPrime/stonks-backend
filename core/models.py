@@ -55,7 +55,7 @@ class Asset(models.Model):
     sector = models.CharField(max_length=60)
     description = models.CharField(max_length=60)
     last_price = models.DecimalField(default=0, max_digits=20, decimal_places=10)
-    thumbnail_url = models.URLField(max_length=200)
+    thumbnail_url = models.URLField(max_length=200, null=True)
 
     class Meta:
         db_table = 'core_financial_asset'

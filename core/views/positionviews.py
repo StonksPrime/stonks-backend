@@ -1,8 +1,9 @@
 from django.shortcuts import render
 from django.core import serializers
 from django.http import JsonResponse,HttpResponse, Http404
+from django.db.models import Q
 
-from ..models import Position
+from ..models import Position, Crypto, Stock, ETF
 from ..serializers import PositionSerializer
 
 from rest_framework.views import APIView
@@ -17,18 +18,52 @@ class PositionList(APIView):
     """
     permission_classes = (IsAuthenticated,)
 
-    def get(self, request, format=None):
+    def get(self, request, username, format=None):
         position = Position.objects.filter(user=request.user)
         serializer = PositionSerializer(position, many=True)
         return Response(serializer.data)
 
-    def post(self, request, format=None):
+    def post(self, request, username, format=None):
         serializer = PositionSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class CryptoPositionList(APIView):
+    """
+    List all positions
+    """
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, username, format=None):
+        cryptos = Crypto.objects.all()
+        position = Position.objects.filter(user=request.user, asset__in=cryptos)
+        not_empty_positions=position.exclude(quantity=0)
+        serializer = PositionSerializer(not_empty_positions, many=True)
+        return Response(serializer.data)
+
+class StockPositionList(APIView):
+    """
+    List all positions
+    """
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, format=None):
+        position = Position.objects.filter(user=request.user)
+        serializer = PositionSerializer(position, many=True)
+        return Response(serializer.data)
+
+class ETFPositionList(APIView):
+    """
+    List all positions
+    """
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, format=None):
+        position = Position.objects.filter(user=request.user)
+        serializer = PositionSerializer(position, many=True)
+        return Response(serializer.data)
 class PositionDetail(APIView):
     """
     Retrieve, update or delete a position instance.

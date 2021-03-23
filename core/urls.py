@@ -4,7 +4,7 @@ from .views.brokerviews import BrokerDetail, BrokerList
 from .views.accountviews import AccountDetail, AccountList
 from .views.stockviews import StockDetail, StockList, StockListApple
 from .views.fiatviews import FiatDetail, FiatList
-from .views.positionviews import PositionDetail, PositionList
+from .views.positionviews import PositionDetail, PositionList, CryptoPositionList
 from .views.fundviews import FundDetail, FundList
 from .views.etfviews import ETFDetail, ETFList
 from .views.cryptoviews import CryptoDetail, CryptoList
@@ -15,6 +15,8 @@ urlpatterns = [
     path('sign_up/', SignUpView.as_view(), name='sign_up'),
     path('investors/', InvestorList.as_view()),
     path('investors/<username>/', InvestorDetail.as_view()),
+    path('investors/<username>/positions/', PositionList.as_view()),
+    path('investors/<username>/positions/crypto', CryptoPositionList.as_view()),
 
     path('assets/', AssetList.as_view()),
     path('assets/<ticker>/', AssetDetail.as_view()),
@@ -41,12 +43,12 @@ urlpatterns = [
     path('cryptos/', CryptoList.as_view()),
     path('cryptos/<id>/', CryptoDetail.as_view()),
 
-    path('positions_class/', PositionList.as_view()),
-    path('positions_class/<id>/', PositionDetail.as_view()),
-
+    path('positions/', PositionList.as_view()),
+    path('positions/<id>/', PositionDetail.as_view()),
+ 
     path('token-auth/', LogInView.as_view(), name='log_in'),
     path('token-refresh/', TokenRefreshView.as_view(), name='token_refresh'), 
 
-    path('positions/', positions, name='positions'),
+    path('positions_method/', positions, name='positions'),
     path('update_positions/', update_positions, name='update_positions'),
 ]
