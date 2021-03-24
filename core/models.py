@@ -19,7 +19,11 @@ class Investor(AbstractUser):
     public_profile = models.BooleanField(default=0)
     birth_date = models.DateField(null=True, blank=True)
     brokers = models.ManyToManyField(Broker, through='Account')
-    #profile_picture = models.CharField(max_length=300, blank=True)
+    profile_picture = models.CharField(max_length=400, null=True)
+    email = models.EmailField(max_length=254, unique=True)
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = []
 
     class Meta:
         db_table = 'core_investor'

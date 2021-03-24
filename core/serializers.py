@@ -2,6 +2,7 @@ from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from .models import *
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from django.contrib.auth.models import update_last_login
 
 class PositionSerializer(serializers.ModelSerializer):
     class Meta:
@@ -53,7 +54,7 @@ class AssetSerializer(serializers.ModelSerializer):
 class InvestorSerializer(serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
-        fields = ['id', 'username', 'first_name', 'last_name', 'email', 'last_login','public_profile', 'birth_date','password']
+        fields = ['id', 'username', 'first_name', 'last_name', 'email', 'last_login','public_profile', 'birth_date','password','profile_picture']
 
 class UserSerializer(serializers.ModelSerializer):
     password1 = serializers.CharField(write_only=True)
@@ -82,6 +83,8 @@ class UserSerializer(serializers.ModelSerializer):
         read_only_fields = ('id',)
 
 class LogInSerializer(TokenObtainPairSerializer):
+
+
     @classmethod
     def get_token(cls, user):
         token = super().get_token(user)
@@ -93,11 +96,32 @@ class LogInSerializer(TokenObtainPairSerializer):
 
     def validate(self, attrs):
         # The default result (access/refresh tokens)
-        data = super(LogInSerializer, self).validate(attrs)
+        
+        data = {}
+        print(attrs)
+        
+        self.user = Investor.objects.filter(email=attrs[self.username_field]).first()
+        
+        refresh = self.get_token(self.user)
+
+        data['token'] = {}
+        data['token']['access_token'] = str(refresh.access_token)
+        data['token']['refresh_token'] = str(refresh)
+
+        update_last_login(None, self.user)
+
+        if not self.user:
+            raise ValidationError('The user is not valid.')
+
+        if self.user:
+            if not self.user.check_password(attrs['password']):
+                raise ValidationError('Incorrect credentials.')
+
+        if self.user is None or not self.user.is_active:
+            raise ValidationError('No active account found with the given credentials')
         # Custom data to include a part from token
-        data.update({'id': self.user.id})
+        data['id']= self.user.id
         data.update({'username': self.user.username})
-        data.update({'first_name': self.user.first_name})
-        data.update({'last_name': self.user.last_name})
-        data.update({'picture': 'assets/images/eva.png'}) # TODO: fix with current picture
+        data['full_name'] = self.user.first_name + self.user.last_name
+        data['role'] = 'user'
         return data
