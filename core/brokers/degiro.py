@@ -1,5 +1,5 @@
-import degiroapi
-from degiroapi.product import Product
+from core.brokers import degiroapi
+from core.brokers.degiroapi.product import Product
 from core.brokers.broker_interface import BrokerInterface
 from core.models import Broker, Investor, Account, Stock, ETF, Position
 
@@ -14,8 +14,8 @@ class DegiroAPI(BrokerInterface):
         self.account = None
     # init
 
-    def loadInvestorAccount(self, investor_username, password):
-        self.degiroClient.login(investor_username, password)
+    def loadInvestorAccount(self, investor_username, password, twoWay=""):
+        self.degiroClient.login(investor_username, password, twoWay)
         self.investor = Investor.objects.filter(username=investor_username)[0]
         print(self.investor)
 
