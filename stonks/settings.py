@@ -10,9 +10,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 import os
-from . import settings_secret
+import base64
 from pathlib import Path
 import datetime
+import ast
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -22,12 +23,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = settings_secret.SECRET_KEY
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
+allowed_host_b64 = os.getenv('ALLOWED_HOSTS').encode('ascii')
+allowed_host_bytes = base64.b64decode(allowed_host_b64)
+allowed_host_string = allowed_host_bytes.decode('ascii')
+ALLOWED_HOSTS = ast.literal_eval(allowed_host_string)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
-ALLOWED_HOSTS = settings_secret.ALLOWED_HOSTS
 
 CORS_ALLOW_ALL_ORIGINS = True
 
@@ -87,7 +90,16 @@ WSGI_APPLICATION = 'stonks.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
-DATABASES = settings_secret.DATABASES
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'stonksDB',
+        'USER': os.getenv('DB_USER'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
+        'HOST': os.getenv('DB_HOST'),
+        'PORT': '8909',
+    }
+}
 
 AUTH_USER_MODEL = "core.Investor"
 

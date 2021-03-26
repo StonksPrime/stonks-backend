@@ -44,7 +44,7 @@ class InvestorDetail(APIView):
     """
     Retrieve, update or delete a snippet instance.
     """
-    #permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,)
     def get_object(self, username):
         try:
             return Investor.objects.get(username=username)
