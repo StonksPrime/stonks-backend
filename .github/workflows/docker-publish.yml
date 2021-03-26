@@ -18,14 +18,6 @@ env:
 
 jobs:
 
-  get_secrets:
-    name: Get non-public files from stonks-secrets repository
-    runs-on: ubuntu-latest
-    steps:
-    - name: Get files and copy to desired folder
-      run: |
-        git clone git@github.com:StonksPrime/stonks-secrets.git
-        cp settings_secrets.py stonks/settings_secret.py
   # Run tests.
   # See also https://docs.docker.com/docker-hub/builds/automated-testing/
   test:
