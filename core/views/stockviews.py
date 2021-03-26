@@ -5,14 +5,15 @@ from django.http import JsonResponse,HttpResponse, Http404
 from ..models import Stock
 from ..serializers import StockSerializer
 
+import os
+
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 import finnhub
-from ..secret_api_tokens import *
 
-finnhub_client = finnhub.Client(api_key=FINNHUB_API_KEY)
+finnhub_client = finnhub.Client(api_key=os.getenv('FINNHUB_API_KEY'))
 
 class StockListApple(APIView):
     def get(self, request, format=None):
