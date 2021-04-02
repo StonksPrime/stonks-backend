@@ -78,6 +78,7 @@ def positions(request):
 
 	return HttpResponse(data, content_type='application/json')
 
+
 #TODO: refactor to class based view
 @login_required
 def update_positions(request):

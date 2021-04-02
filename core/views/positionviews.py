@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.core import serializers
 from django.http import JsonResponse,HttpResponse, Http404
 from django.db.models import Q
+import simplejson as json
 
 from ..models import Position, Crypto, Stock, ETF
 from ..serializers import PositionSerializer
@@ -40,8 +41,21 @@ class CryptoPositionList(APIView):
         cryptos = Crypto.objects.all()
         position = Position.objects.filter(user=request.user, asset__in=cryptos)
         not_empty_positions=position.exclude(quantity=0)
-        serializer = PositionSerializer(not_empty_positions, many=True)
-        return Response(serializer.data)
+        
+        positions = []
+        for position in not_empty_positions:
+            pos = {'assetName': position.asset.name, 'ticker': position.asset.ticker, 'broker': 'Kraken', 'type': 'crypto', 'market': 'Crypto', 
+            'ownedShares': position.quantity,
+                'value': 3049.2, 'totalValue': 6098.4, 'gains': 1647.57, 'gainsPercent': 27, 'delta': { 'up': 'true', 'value': 27},
+                'comparison': { 'prevDate': 'M', 'prevValue': -15, 'nextDate': 'W', 'nextValue': 12 },
+                'img': 'https://storage.googleapis.com/www-paredro-com/uploads/2019/04/bitcoin.jpg' 
+                , 'BEP': position.break_even_price, 'todayGains': 15}
+            positions.append(pos)
+
+
+    
+        data = json.dumps(positions)
+        return HttpResponse(data, content_type='application/json')
 
 class StockPositionList(APIView):
     """
@@ -49,10 +63,28 @@ class StockPositionList(APIView):
     """
     permission_classes = (IsAuthenticated,)
 
-    def get(self, request, format=None):
-        position = Position.objects.filter(user=request.user)
-        serializer = PositionSerializer(position, many=True)
-        return Response(serializer.data)
+    def get(self, request, username, format=None):
+        stocks = Stock.objects.all()
+        position = Position.objects.filter(user=request.user, asset__in=stocks)
+        not_empty_positions=position.exclude(quantity=0)
+        
+        positions = []
+        for position in not_empty_positions:
+            diff = position.asset.last_price-position.break_even_price
+            pos = {'assetName': position.asset.name, 'ticker': position.asset.ticker, 'broker': position.broker.name, 'type': 'stock', 
+                'market': 'Nasdaq', 'ownedShares': position.quantity, 'value': position.asset.last_price, 
+                'totalValue': round(position.asset.last_price*position.quantity,2), 
+                'gains': round(diff * position.quantity,2), 
+                'gainsPercent': round((diff/position.break_even_price)*100,2), 'delta': { 'up': 'true', 'value': 27},
+                'comparison': { 'prevDate': 'M', 'prevValue': -15, 'nextDate': 'W', 'nextValue': 12 },
+                'img': 'https://png2.cleanpng.com/sh/61d8e7168261a70f6159fcd363c459f2/L0KzQYm3VMA6N6Juj5H0aYP2gLBuTfNwdaF6jNd7LXnmf7B6TfNidpVxfeV9aXPuPbTvggJ1NZRxgeI2YYL3PbfzjCdqdpgyTdNsYki6SLO6V8A1OGQzUKkENEO2RoW4VcI0Omk8UaYCMkK4RHB3jvc=/kisspng-computer-icons-candlestick-chart-clip-art-flowing-5acb878b370403.8794336415232879472254.png' 
+                , 'BEP': position.break_even_price, 'todayGains': 15}
+            positions.append(pos)
+
+
+    
+        data = json.dumps(positions, use_decimal=True)
+        return HttpResponse(data, content_type='application/json')
 
 class ETFPositionList(APIView):
     """

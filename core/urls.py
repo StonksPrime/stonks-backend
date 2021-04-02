@@ -4,7 +4,7 @@ from .views.brokerviews import BrokerDetail, BrokerList
 from .views.accountviews import AccountDetail, AccountList
 from .views.stockviews import StockDetail, StockList, StockListApple
 from .views.fiatviews import FiatDetail, FiatList
-from .views.positionviews import PositionDetail, PositionList, CryptoPositionList
+from .views.positionviews import PositionDetail, PositionList, CryptoPositionList, StockPositionList, ETFPositionList
 from .views.fundviews import FundDetail, FundList
 from .views.etfviews import ETFDetail, ETFList
 from .views.cryptoviews import CryptoDetail, CryptoList
@@ -17,7 +17,9 @@ urlpatterns = [
     path('investors/<username>/', InvestorDetail.as_view()),
     path('investors/<username>/positions/', PositionList.as_view()),
     path('investors/<username>/positions/crypto', CryptoPositionList.as_view()),
-
+	path('investors/<username>/positions/stock', StockPositionList.as_view()),
+	path('investors/<username>/positions/etf', ETFPositionList.as_view()),
+    
     path('assets/', AssetList.as_view()),
     path('assets/<ticker>/', AssetDetail.as_view()),
 
