@@ -51,6 +51,5 @@ urlpatterns = [
     path('token-auth/', LogInView.as_view(), name='log_in'),
     path('token-refresh/', TokenRefreshView.as_view(), name='token_refresh'), 
 
-    path('positions_method/', positions, name='positions'),
-    path('update_positions/', update_positions, name='update_positions'),
+    path('update_positions/', UpdatePositions.as_view(), name='update_positions'),
 ]

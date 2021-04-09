@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 
 from ..models import Position, Broker, Account, Investor
-from ..brokers import kraken
+from ..brokers import kraken, degiro
 from ..serializers import InvestorSerializer, UserSerializer, LogInSerializer
 
 from rest_framework import generics
@@ -69,25 +69,25 @@ class InvestorDetail(APIView):
         investor.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-#TODO: refactor to class based view
-@login_required
-def positions(request):
 
-	positions = Position.objects.filter(user=request.user)
-	data = serializers.serialize('json', positions)
+class UpdatePositions(APIView):
+    """
+    Retrieve, update or delete a snippet instance.
+    """
+    def post(self, request, *args, **kwargs):
+        permission_classes = (IsAuthenticated,)
+        print('aaaa')
+        accounts = Account.objects.filter(person=request.user)
+        for account in accounts:
+            broker = account.broker_exchange
+            if broker.name == 'Kraken':
+                api=kraken.KrakenAPI()
+                api.loadInvestorAccount(request.user.username)
+                api.updateCurrentPositions()
 
-	return HttpResponse(data, content_type='application/json')
+            if broker.name == 'Degiro':
+                api=degiro.DegiroAPI()
+                api.loadInvestorAccount(request.user.username, request.data.get("broker_username"), request.data.get("broker_password"), request.data.get("one_time_token"))
+                api.updateCurrentPositions()
 
-
-#TODO: refactor to class based view
-@login_required
-def update_positions(request):
-	accounts = Account.objects.filter(person=request.user)
-	for account in accounts:
-		broker = account.broker_exchange
-		if broker.name == 'Kraken':
-			api=kraken.KrakenAPI()
-			api.loadInvestorAccount(request.user.username)
-			api.updateCurrentPositions()
-
-	return HttpResponse("{\"result\": \"ok\"}", content_type='application/json')
+        return Response(status=status.HTTP_200_OK)
