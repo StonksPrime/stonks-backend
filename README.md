@@ -1,4 +1,6 @@
 # stonks backend
+[![Build Status](https://github.com/StonksPrime/stonks-backend/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/StonksPrime/stonks-backend/actions/workflows/docker-publish.yml)
+[![GitHub license](https://img.shields.io/badge/license-MIT-blue.png)](https://raw.githubusercontent.com/StonksPrime/stonks-backend/main/LICENSE)
 
 Installation
 ============
