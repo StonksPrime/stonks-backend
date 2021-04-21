@@ -2,6 +2,7 @@ from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import AbstractUser
 from django_countries.fields import CountryField
+from django_cryptography.fields import encrypt
 
 class Broker(models.Model):
     name = models.CharField(max_length=60)
@@ -35,9 +36,9 @@ class Account(models.Model):
     person = models.ForeignKey(Investor, null=True, on_delete=models.SET_NULL)
     broker_exchange = models.ForeignKey(Broker, null=True, on_delete=models.SET_NULL)
     broker_username = models.CharField(max_length=60, blank=True)
-    broker_password = models.CharField(max_length=60, blank=True)
-    token_key = models.CharField(max_length=200, blank=True)
-    token_secret = models.CharField(max_length=200, blank=True)
+    broker_password = encrypt(models.CharField(max_length=300, blank=True))
+    token_key = encrypt(models.CharField(max_length=300, blank=True))
+    token_secret = encrypt(models.CharField(max_length=300, blank=True))
 
     class Meta:
         db_table = 'core_investor_broker_account'

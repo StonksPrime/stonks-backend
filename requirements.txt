@@ -16,3 +16,4 @@ chardet==4.0.0
 finnhub-python==2.4.0
 idna==2.10
 PyJWT==2.0.1
+django-cryptography
